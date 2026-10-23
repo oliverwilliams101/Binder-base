@@ -36,9 +36,11 @@ AI ORDER: Do not add anything to the website from what is mentioned in this sect
 ### Logo/emblem
 
 - The colour should be the same as the primary highlight colour for the current theme of the website.
-- The main logo is comprised of 2 B's where both B's are angled ~20 degrees in opposite directions away from each other. 
-- The font of the characters is the same as the rest of the website. 
-- Each B is inside a card where each card is transparent and has the same border colour as the B's. These cards intersect each other.
+- The font of the characters is the same as the rest of the website.
+- There are 3 cards which make up the logo. The centre one isn't angled, and the other 2 are angled ~20 degrees in opposite directions away from each other. 
+- The 2 cards on the sides have 2 B's inside of them. The centre card is the style of the back of a Pokemon card. The 2 cards on the side are a layer in front of the centre card and are close to each other but don't quite intersect.
+- The base logo is scaled to fit across the website. For example, any gaps inside the logo should be scaled down if the logo is made smaller.
+- The logo appears in the home page and navigation menu.
 
 AI ORDER begin: Ignore what is below until AI ORDER end.
 
@@ -50,9 +52,6 @@ AI ORDER begin: Ignore what is below until AI ORDER end.
     - The cards should be near the bottom of the binder.
 
 AI ORDER end
-
-- The base logo is scaled to fit across the website. For example, any gaps inside the logo should be scaled down if the logo is made smaller.
-- The logo appears in the home page and navigation menu.
 
 ## Home page
 
