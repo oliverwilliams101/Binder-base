@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import BrandEmblem from './components/BrandEmblem.vue';
 import Navbar from './components/Navbar.vue';
@@ -10,6 +10,11 @@ const themes = [
   { id: 'dark', label: 'Dark' },
   { id: 'contrast', label: 'High contrast' }
 ];
+const themeIcons = {
+  light: '/favicon-light.svg?v=9',
+  dark: '/favicon-dark.svg?v=9',
+  contrast: '/favicon-contrast.svg?v=9'
+};
 
 const savedTheme = localStorage.getItem('binderbase-theme');
 const activeTheme = ref(themes.some((theme) => theme.id === savedTheme) ? savedTheme : 'light');
@@ -19,45 +24,32 @@ const nextTheme = computed(() => {
   return themes[(currentIndex + 1) % themes.length];
 });
 const switchHint = computed(() => `Switch to ${nextTheme.value.label.toLowerCase()} theme`);
-let faviconTemplatePromise;
-let faviconUpdateId = 0;
 
-function updateFavicon() {
-  const iconLink = document.querySelector('link[rel="icon"]');
-  if (!iconLink) return;
+function updateFavicon(theme) {
+  const previousIcon = document.querySelector('link[rel~="icon"]');
+  if (previousIcon?.getAttribute('href') === themeIcons[theme]) return;
 
-  const updateId = ++faviconUpdateId;
-  faviconTemplatePromise ??= fetch('/favicon.svg').then((response) => {
-    if (!response.ok) throw new Error('Could not load the site icon');
-    return response.text();
-  });
+  const iconLink = document.createElement('link');
+  iconLink.rel = 'icon';
+  iconLink.type = 'image/svg+xml';
+  iconLink.href = themeIcons[theme];
+  previousIcon?.replaceWith(iconLink);
+  if (!previousIcon) document.head.append(iconLink);
+}
 
-  faviconTemplatePromise.then((template) => {
-    if (updateId !== faviconUpdateId) return;
-
-    const styles = getComputedStyle(document.documentElement);
-    const themeColors = {
-      accent: styles.getPropertyValue('--accent').trim(),
-      hover: styles.getPropertyValue('--accent-hover').trim(),
-      surface: styles.getPropertyValue('--surface').trim(),
-      accentSoft: styles.getPropertyValue('--accent-soft').trim(),
-      ink: styles.getPropertyValue('--accent-ink').trim()
-    };
-    const themeStyle = `<style id="favicon-theme">:root{--accent:${themeColors.accent};--accent-hover:${themeColors.hover};--surface:${themeColors.surface};--accent-soft:${themeColors.accentSoft};--accent-ink:${themeColors.ink}}</style>`;
-    const themedIcon = template.replace(/<style id="favicon-theme">[\s\S]*?<\/style>/, themeStyle);
-    iconLink.href = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(themedIcon)}`;
-  }).catch(() => {});
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  localStorage.setItem('binderbase-theme', theme);
+  updateFavicon(theme);
 }
 
 function cycleTheme() {
-  activeTheme.value = nextTheme.value.id;
+  const theme = nextTheme.value.id;
+  activeTheme.value = theme;
+  applyTheme(theme);
 }
 
-watch(activeTheme, (theme) => {
-  document.documentElement.dataset.theme = theme;
-  localStorage.setItem('binderbase-theme', theme);
-  updateFavicon();
-}, { immediate: true });
+applyTheme(activeTheme.value);
 </script>
 
 <template>
@@ -109,6 +101,9 @@ watch(activeTheme, (theme) => {
   --border: #d9e4f1;
   --accent: #2879d0;
   --accent-hover: #226fbe;
+  --logo-card-back: #165eae;
+  --logo-card-front: #5d9fe0;
+  --logo-card-back-ink: #ffffff;
   --accent-ink: #ffffff;
   --accent-soft: #e4f0ff;
   --focus: #165eae;
@@ -125,6 +120,9 @@ watch(activeTheme, (theme) => {
   --border: #34465d;
   --accent: #73b7fa;
   --accent-hover: #83bffd;
+  --logo-card-back: #b8ddff;
+  --logo-card-front: #226fbe;
+  --logo-card-back-ink: #102034;
   --accent-ink: #102034;
   --accent-soft: #203b58;
   --focus: #9bceff;
@@ -141,6 +139,9 @@ watch(activeTheme, (theme) => {
   --border: #ffffff;
   --accent: #3db7ff;
   --accent-hover: #5fc4ff;
+  --logo-card-back: #72d0ff;
+  --logo-card-front: #004f91;
+  --logo-card-back-ink: #000000;
   --accent-ink: #000000;
   --accent-soft: #06263a;
   --focus: #ffec4a;

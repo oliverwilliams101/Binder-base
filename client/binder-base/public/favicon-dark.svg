@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="5 0 310 300">
+  <g fill="#b8ddff">
+    <rect x="45" y="25" width="146" height="205" rx="11" transform="rotate(-20 118 127.5)" />
+  </g>
+  <text x="118" y="178" fill="#152131" font-family="Comic Sans MS, Comic Sans, cursive" font-size="150" font-weight="700" text-anchor="middle" transform="rotate(-20 118 127.5)">B</text>
+  <g fill="#226fbe">
+    <rect x="130" y="70" width="146" height="205" rx="11" transform="rotate(20 203 172.5)" />
+  </g>
+  <text x="203" y="223" fill="#152131" font-family="Comic Sans MS, Comic Sans, cursive" font-size="150" font-weight="700" text-anchor="middle" transform="rotate(20 203 172.5)">B</text>
+</svg>

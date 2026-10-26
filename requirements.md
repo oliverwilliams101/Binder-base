@@ -36,13 +36,21 @@ AI ORDER: Do not add anything to the website from what is mentioned in this sect
 
 ### Logo/emblem
 
-- The colour should be the same as the primary highlight colour for the current theme of the website.
-- The font of the characters is the same as the rest of the website.
-- There are 3 cards which make up the logo. The centre one isn't angled, and the other 2 are angled ~20 degrees in opposite directions away from each other. 
-- The 2 cards on the sides have 2 B's inside of them. The centre card is the style of the back of a card but doesn't include a Pokeball for copyright reasons. The 2 cards on the side are a layer in front of the centre card and are close to each other but don't quite intersect.
-- The base logo is scaled to fit across the website. For example, any gaps inside the logo should be scaled down if the logo is made smaller.
-- The logo appears in the home page and navigation menu.
-- The logo is used as the icon for the website and changes colour based on the theme.
+- Small version:
+    - The colour should be the same as the primary highlight colour for the current theme of the website.
+    - The font of the characters is the same as the rest of the website. 
+    - The main logo is comprised of 2 B's where the B's are angled ~20 degrees in opposite directions away from each other. 
+    - Each B is inside a card where each card is the same colour as the. background and has the same border colour as the B's. These cards intersect each other.
+    - The base logo is scaled to fit across the website. For example, any gaps inside the logo should be scaled down if the logo is made smaller.
+    - This logo appears on the navigation menu.
+    - This logo is used as the icon for the website and changes colour based on the theme.
+- Full version:
+    - Uses the small version of the logo (2 cards) as the base.
+    - A sideways flat strap Pokemon binder overlaps the 2 cards slightly to make it look like the cards are coming out of the binder. The strap goes horizontally across the binder starting 4/5ths up the binder.
+    - The 2 cards are centered horzontally to the binder.
+    - The binder uses the same colour as the rest of the logo.
+    - The binder has BinderBase on the strap.
+    - The binders width is 200px and height is 130px. This is the base size and can be scaled if needed.
 
 ## Navigation
 

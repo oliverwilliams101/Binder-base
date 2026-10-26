@@ -158,7 +158,7 @@ const destinations = computed(() => {
         </div>
       </div>
 
-      <BrandEmblem class="welcome-mark" large />
+      <BrandEmblem class="welcome-mark" full />
     </section>
 
     <section class="destinations" aria-labelledby="destinations-title">

@@ -2,7 +2,19 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script>
+      (() => {
+        let savedTheme = 'light';
+        try {
+          const storedTheme = localStorage.getItem('binderbase-theme');
+          if (['light', 'dark', 'contrast'].includes(storedTheme)) savedTheme = storedTheme;
+        } catch {
+          // Keep the default icon when browser storage is unavailable.
+        }
+
+        document.write(`<link rel="icon" type="image/svg+xml" href="/favicon-${savedTheme}.svg?v=9" />`);
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>binder-base</title>
   </head>
