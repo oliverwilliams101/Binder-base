@@ -19,6 +19,35 @@ const nextTheme = computed(() => {
   return themes[(currentIndex + 1) % themes.length];
 });
 const switchHint = computed(() => `Switch to ${nextTheme.value.label.toLowerCase()} theme`);
+let faviconTemplatePromise;
+let faviconUpdateId = 0;
+
+function updateFavicon() {
+  const iconLink = document.querySelector('link[rel="icon"]');
+  if (!iconLink) return;
+
+  const updateId = ++faviconUpdateId;
+  faviconTemplatePromise ??= fetch('/favicon.svg').then((response) => {
+    if (!response.ok) throw new Error('Could not load the site icon');
+    return response.text();
+  });
+
+  faviconTemplatePromise.then((template) => {
+    if (updateId !== faviconUpdateId) return;
+
+    const styles = getComputedStyle(document.documentElement);
+    const themeColors = {
+      accent: styles.getPropertyValue('--accent').trim(),
+      hover: styles.getPropertyValue('--accent-hover').trim(),
+      surface: styles.getPropertyValue('--surface').trim(),
+      accentSoft: styles.getPropertyValue('--accent-soft').trim(),
+      ink: styles.getPropertyValue('--accent-ink').trim()
+    };
+    const themeStyle = `<style id="favicon-theme">:root{--accent:${themeColors.accent};--accent-hover:${themeColors.hover};--surface:${themeColors.surface};--accent-soft:${themeColors.accentSoft};--accent-ink:${themeColors.ink}}</style>`;
+    const themedIcon = template.replace(/<style id="favicon-theme">[\s\S]*?<\/style>/, themeStyle);
+    iconLink.href = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(themedIcon)}`;
+  }).catch(() => {});
+}
 
 function cycleTheme() {
   activeTheme.value = nextTheme.value.id;
@@ -27,6 +56,7 @@ function cycleTheme() {
 watch(activeTheme, (theme) => {
   document.documentElement.dataset.theme = theme;
   localStorage.setItem('binderbase-theme', theme);
+  updateFavicon();
 }, { immediate: true });
 </script>
 
@@ -39,7 +69,7 @@ watch(activeTheme, (theme) => {
         <span>BinderBase</span>
       </RouterLink>
       <div class="theme-control">
-        <span class="theme-current" aria-live="polite">{{ currentTheme.label }} theme</span>
+        <span class="theme-current" aria-live="polite">{{ currentTheme.label }}</span>
         <button
           class="theme-button"
           type="button"

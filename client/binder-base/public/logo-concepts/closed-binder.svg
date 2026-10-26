@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 240" role="img" aria-labelledby="title desc">
+  <title id="title">BinderBase — Closed Binder</title>
+  <desc id="desc">A zipped collector binder with two B cards and two blue swirl-backed cards emerging behind it.</desc>
+  <defs>
+    <linearGradient id="binder" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#274875"/><stop offset="1" stop-color="#132844"/></linearGradient>
+    <linearGradient id="blue" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#57b9ed"/><stop offset="1" stop-color="#14518d"/></linearGradient>
+  </defs>
+  <g transform="translate(44 20)">
+    <!-- Two branded fronts -->
+    <g transform="rotate(-13 121 99)"><rect x="69" y="12" width="76" height="112" rx="9" fill="#fff" stroke="#e6b84a" stroke-width="5"/><rect x="76" y="19" width="62" height="98" rx="5" fill="#f5f8fc"/><text x="107" y="91" text-anchor="middle" font-family="Arial,sans-serif" font-size="53" font-weight="800" fill="#23456f">B</text><path d="M84 31h46" stroke="#e6b84a" stroke-width="3" stroke-linecap="round"/></g>
+    <g transform="rotate(13 235 99)"><rect x="197" y="12" width="76" height="112" rx="9" fill="#fff" stroke="#e6b84a" stroke-width="5"/><rect x="204" y="19" width="62" height="98" rx="5" fill="#f5f8fc"/><text x="235" y="91" text-anchor="middle" font-family="Arial,sans-serif" font-size="53" font-weight="800" fill="#23456f">B</text><path d="M212 31h46" stroke="#e6b84a" stroke-width="3" stroke-linecap="round"/></g>
+    <!-- Card backs -->
+    <g transform="rotate(-5 162 79)"><rect x="148" y="3" width="72" height="106" rx="8" fill="#f5fbff" stroke="#19375c" stroke-width="4"/><rect x="154" y="9" width="60" height="94" rx="5" fill="url(#blue)" stroke="#d4e6f3" stroke-width="2"/><path d="M165 57c0-19 23-29 38-17 15 12 7 35-11 38-11 2-20-5-20-15 0-8 7-14 15-13 6 1 10 6 9 11" fill="none" stroke="#d9f1ff" stroke-width="5" stroke-linecap="round"/></g>
+    <g transform="rotate(8 282 77)"><rect x="259" y="2" width="72" height="106" rx="8" fill="#f5fbff" stroke="#19375c" stroke-width="4"/><rect x="265" y="8" width="60" height="94" rx="5" fill="url(#blue)" stroke="#d4e6f3" stroke-width="2"/><path d="M276 56c0-19 23-29 38-17 15 12 7 35-11 38-11 2-20-5-20-15 0-8 7-14 15-13 6 1 10 6 9 11" fill="none" stroke="#d9f1ff" stroke-width="5" stroke-linecap="round"/></g>
+    <!-- closed binder and zipper -->
+    <path d="M54 86Q54 76 67 76h242q13 0 13 13v91q0 14-14 14H69q-15 0-15-14Z" fill="url(#binder)" stroke="#0d1e34" stroke-width="5"/>
+    <path d="M76 83v98M304 83v98" stroke="#7790aa" stroke-width="3" opacity=".65"/>
+    <path d="M64 81v105" stroke="#e6b84a" stroke-width="4" stroke-dasharray="3 5"/>
+    <path d="M60 124h-11q-8 0-8 8t8 8h11" fill="none" stroke="#e6b84a" stroke-width="5" stroke-linecap="round"/>
+    <path d="M50 132h-8" stroke="#e6b84a" stroke-width="5" stroke-linecap="round"/>
+    <rect x="290" y="111" width="18" height="42" rx="8" fill="#d8a73a" stroke="#fff0c3" stroke-width="2"/>
+    <path d="M296 119v24" stroke="#fff0c3" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <text x="405" y="110" font-family="Arial,sans-serif" font-size="43" font-weight="800" letter-spacing="-1.5" fill="#19375c">Binder<tspan fill="#d5a636">Base</tspan></text>
+  <path d="M408 127h174" stroke="#e5edf5" stroke-width="4" stroke-linecap="round"/>
+</svg>
