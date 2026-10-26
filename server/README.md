@@ -13,7 +13,7 @@ The Vue development server proxies `/api` requests to `http://127.0.0.1:8000`.
 Authentication endpoints return JSON:
 
 - `POST /api/auth/register` creates an account and returns its public user record.
-- `POST /api/auth/login` validates credentials, returns the public user record, and sets an HTTP-only session cookie.
+- `POST /api/auth/login` accepts a username and password, returns the public user record, and sets an HTTP-only session cookie.
 - `GET /api/auth/me` returns the signed-in user associated with the session cookie.
 - `POST /api/auth/logout` revokes the session and clears the cookie.
 

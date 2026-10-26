@@ -5,6 +5,7 @@ import { useAuth } from '../services/auth';
 
 const router = useRouter();
 const { register } = useAuth();
+const username = ref('');
 const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
@@ -13,6 +14,10 @@ const isSubmitting = ref(false);
 
 async function submitRegistration() {
   errorMessage.value = '';
+  if (!username.value.trim()) {
+    errorMessage.value = 'Enter a username.';
+    return;
+  }
   if (password.value !== confirmPassword.value) {
     errorMessage.value = 'Passwords do not match.';
     return;
@@ -20,7 +25,7 @@ async function submitRegistration() {
 
   isSubmitting.value = true;
   try {
-    await register({ email: email.value, password: password.value });
+    await register({ username: username.value, email: email.value, password: password.value });
     await router.replace({ path: '/login', query: { registered: '1' } });
   } catch (error) {
     errorMessage.value = error.message;
@@ -35,6 +40,17 @@ async function submitRegistration() {
     <h1>Register</h1>
     <p>Create an account to access your dashboard.</p>
     <form class="auth-form" @submit.prevent="submitRegistration">
+      <label for="register-username">Username</label>
+      <input
+        id="register-username"
+        v-model.trim="username"
+        type="text"
+        name="username"
+        autocomplete="username"
+        minlength="1"
+        maxlength="32"
+        required
+      />
       <label for="register-email">Email</label>
       <input
         id="register-email"

@@ -12,7 +12,7 @@ from fastapi import Cookie, Depends, FastAPI, HTTPException, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import EmailStr, Field as PydanticField
 from sqlalchemy.exc import IntegrityError
-from sqlmodel import Field, Session as DbSession, SQLModel, create_engine, select
+from sqlmodel import Field, Session as DbSession, SQLModel, create_engine, func, select
 
 
 DATABASE_URL = f"sqlite:///{Path(__file__).resolve().parent / 'binderbase.db'}"
@@ -29,6 +29,7 @@ engine = create_engine(
 
 class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
+    username: str = Field(index=True, unique=True, max_length=32)
     email: str = Field(index=True, unique=True, max_length=320)
     password_hash: str = Field(max_length=256)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
@@ -45,8 +46,18 @@ class Credentials(SQLModel):
     password: str = PydanticField(min_length=8, max_length=128)
 
 
+class RegistrationCredentials(Credentials):
+    username: str = PydanticField(min_length=1, max_length=32)
+
+
+class LoginCredentials(SQLModel):
+    username: str = PydanticField(min_length=1, max_length=32)
+    password: str = PydanticField(min_length=8, max_length=128)
+
+
 class UserResponse(SQLModel):
     id: int
+    username: str
     email: str
 
 
@@ -60,6 +71,22 @@ class LogoutResponse(SQLModel):
 
 def create_db_and_tables() -> None:
     SQLModel.metadata.create_all(engine)
+    with engine.begin() as connection:
+        columns = {
+            column["name"]
+            for column in connection.exec_driver_sql("PRAGMA table_info(user)").mappings()
+        }
+        if "username" not in columns:
+            connection.exec_driver_sql(
+                "ALTER TABLE user ADD COLUMN username VARCHAR(32) NOT NULL DEFAULT ''"
+            )
+            connection.exec_driver_sql("UPDATE user SET username = 'user' || id")
+        connection.exec_driver_sql(
+            "CREATE UNIQUE INDEX IF NOT EXISTS ix_user_username ON user (username)"
+        )
+        connection.exec_driver_sql(
+            "CREATE UNIQUE INDEX IF NOT EXISTS ux_user_username_ci ON user (lower(username))"
+        )
 
 
 create_db_and_tables()
@@ -131,7 +158,7 @@ def clear_session_cookie(response: Response) -> None:
 
 
 def public_user(user: User) -> UserResponse:
-    return UserResponse(id=user.id, email=user.email)
+    return UserResponse(id=user.id, username=user.username, email=user.email)
 
 
 def get_current_user(
@@ -158,13 +185,24 @@ def read_current_user(current_user: User = Depends(get_current_user)):
 
 
 @app.post("/api/auth/register", response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
-def register(credentials: Credentials, db: DbSession = Depends(get_db_session)):
+def register(credentials: RegistrationCredentials, db: DbSession = Depends(get_db_session)):
+    username = credentials.username.strip()
+    if not username:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Enter a username.")
+    username_key = username.casefold()
     normalized_email = str(credentials.email).strip().casefold()
     existing_user = db.exec(select(User).where(User.email == normalized_email)).first()
     if existing_user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="An account with this email already exists.")
+    existing_username = db.exec(select(User).where(func.lower(User.username) == username_key)).first()
+    if existing_username:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="That username is already taken.")
 
-    user = User(email=normalized_email, password_hash=hash_password(credentials.password))
+    user = User(
+        username=username,
+        email=normalized_email,
+        password_hash=hash_password(credentials.password),
+    )
     db.add(user)
     try:
         db.commit()
@@ -172,18 +210,18 @@ def register(credentials: Credentials, db: DbSession = Depends(get_db_session)):
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="An account with this email already exists.",
+            detail="An account with this email or username already exists.",
         ) from error
     db.refresh(user)
     return AuthResponse(user=public_user(user))
 
 
 @app.post("/api/auth/login", response_model=AuthResponse)
-def login(credentials: Credentials, response: Response, db: DbSession = Depends(get_db_session)):
-    normalized_email = str(credentials.email).strip().casefold()
-    user = db.exec(select(User).where(User.email == normalized_email)).first()
+def login(credentials: LoginCredentials, response: Response, db: DbSession = Depends(get_db_session)):
+    username_key = credentials.username.strip().casefold()
+    user = db.exec(select(User).where(func.lower(User.username) == username_key)).first()
     if not user or not verify_password(credentials.password, user.password_hash):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Email or password is incorrect.")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Username or password is incorrect.")
 
     token = secrets.token_urlsafe(32)
     auth_session = AuthSession(

@@ -6,7 +6,7 @@ import { useAuth } from '../services/auth';
 const route = useRoute();
 const router = useRouter();
 const { login } = useAuth();
-const email = ref('');
+const username = ref('');
 const password = ref('');
 const errorMessage = ref('');
 const isSubmitting = ref(false);
@@ -16,7 +16,7 @@ async function submitLogin() {
   errorMessage.value = '';
   isSubmitting.value = true;
   try {
-    await login({ email: email.value, password: password.value });
+    await login({ username: username.value, password: password.value });
     await router.replace('/dashboard');
   } catch (error) {
     errorMessage.value = error.message;
@@ -32,13 +32,14 @@ async function submitLogin() {
     <p>Sign in to open your dashboard.</p>
     <p v-if="registrationComplete" class="auth-success" role="status">Account created. Sign in to continue.</p>
     <form class="auth-form" @submit.prevent="submitLogin">
-      <label for="login-email">Email</label>
+      <label for="login-username">Username</label>
       <input
-        id="login-email"
-        v-model="email"
-        type="email"
-        name="email"
+        id="login-username"
+        v-model.trim="username"
+        type="text"
+        name="username"
         autocomplete="username"
+        maxlength="32"
         required
       />
       <label for="login-password">Password</label>

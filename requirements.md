@@ -24,34 +24,36 @@ AI ORDER: Do not add anything to the website from what is mentioned in this sect
 
 ### Theme
 
-- There should be a light, dark, and high contrast theme that the user can switch between on the website.
-- The primary highlight colour should be a Pokemon-like blue but should be slightly lighter or darker based on the theme. 
-- The theme should be controlled by a button which rotates through the themes. 
-- Icons should be used to tell the user which theme is next, as well as a hint when the user hovers over the button. The text next to the theme button says what theme is currently in use, e.g. High contrast, Light, Dark.
-- When you hover over the theme button it should change the colour of the button slightly depending on what theme is currently active. No other animations are used.
+- There's a light, dark, and high contrast theme that the user can switch between on the website.
+- The primary highlight colour is a Pokemon-like blue but is slightly lighter or darker based on the theme. 
+- The theme is controlled by a button which rotates through the themes. 
+- Icons tell the user which theme is next, as well as a hint when the user hovers over the button. The text next to the theme button says what theme is currently in use, e.g. High contrast, Light, Dark.
+- When you hover over the theme button it changes the colour of the button slightly depending on what theme is currently active. No other animations are used.
 
 ### Font
 
-- The font should be Comic sans throughout the website.
+- The font is Comic sans throughout the website.
 
 ### Logo/emblem
 
 - The colour should be the same as the primary highlight colour for the current theme of the website.
-- The font of the characters is the same as the rest of the website. 
-- The main logo uses a Pokemon zip binder mostly face on where there are 2 cards coming out at an angle.
-- The binder is angled to the right slightly so the side has the zip showing.
-- These 2 cards are creeping out of the binder, one is near the bottom on the right, another is on top near the right.
-- The binder has width:height as 2:3.
-- The binder itself has BinderBase on it. Each word is on a seperate line and should cover most of the binder.
-- Each card has a B inside it where each card is the same colour as its background and has the same border colour as the B's.
+- The font of the characters is the same as the rest of the website.
+- There are 3 cards which make up the logo. The centre one isn't angled, and the other 2 are angled ~20 degrees in opposite directions away from each other. 
+- The 2 cards on the sides have 2 B's inside of them. The centre card is the style of the back of a card but doesn't include a Pokeball for copyright reasons. The 2 cards on the side are a layer in front of the centre card and are close to each other but don't quite intersect.
 - The base logo is scaled to fit across the website. For example, any gaps inside the logo should be scaled down if the logo is made smaller.
 - The logo appears in the home page and navigation menu.
+- The logo is used as the icon for the website and changes colour based on the theme.
 
 ## Navigation
 
 ![Website navigation map](diagrams/WebsiteMap.png)
 
+- Login and registration when logged out, and logout when logged in, as well as the theme changer are on the right side of the navigation bar. All other navigation elements are on the left side of the navigation bar.
+
 ## Home page
 
-- BinderBase has a home page which is the first page the user is greated with upon loading the website. This page should contain everything the user needs to know about the website.
-- There is a typewriter animation affect on the phrase "Welcome to BinderBase." which goes round in a loop. Before the typewriter reaches each character, it isn't seen. The animation should last 5 seconds and there is a 0.5 second pause between starting the animation again.
+- BinderBase has a home page which is the first page the user is greated with upon loading the website with "Welcome to BinderBase.". This page contains everything the user needs to know about the website.
+- There is a typewriter animation affect on the phrase "Welcome to BinderBase." which goes round in a loop. Before the typewriter reaches each character, it isn't seen. The animation lasts 5 seconds and there is a 0.5 second pause between starting the animation again. 
+- When the user is logged in, the phrase changes to "Welcome to BinderBase _insert_username_." 
+- The box surrounding the introduction to the website is the same size whether the user is logged in or not.
+- The logo on the home page hovers up and down 30 pixels in a css animation over 6 seconds.

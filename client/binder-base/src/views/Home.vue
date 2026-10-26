@@ -1,27 +1,46 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import BrandEmblem from '../components/BrandEmblem.vue';
 import { useAuth } from '../services/auth';
 
-const { isAuthenticated } = useAuth();
+const { isAuthenticated, user } = useAuth();
 
-const welcomePhrase = 'Welcome to BinderBase.';
-const welcomeFirstLine = Array.from(welcomePhrase.slice(0, 10));
-const welcomeSecondLine = Array.from(welcomePhrase.slice(11));
+const welcomePhrase = computed(() => {
+  const username = user.value?.username;
+  return isAuthenticated.value && username
+    ? `Welcome to BinderBase ${username}.`
+    : 'Welcome to BinderBase.';
+});
+const welcomeFirstLine = computed(() => Array.from(welcomePhrase.value.slice(0, 10)));
+const welcomeSecondLine = computed(() => Array.from(
+  welcomePhrase.value.slice(11, isAuthenticated.value ? 21 : undefined)
+));
+const welcomeUsernameLine = computed(() => Array.from(
+  isAuthenticated.value ? welcomePhrase.value.slice(22) : ''
+));
+const usernameFontSize = computed(() => {
+  const usernameLength = user.value?.username?.length ?? 0;
+  return `${Math.min(1, 14 / Math.max(usernameLength, 1)) * 100}%`;
+});
 const typedCharacterCount = ref(0);
-const animationDuration = 5000;
-const typeDelay = 150;
-const eraseDelay = 50;
-const completePause = animationDuration - welcomePhrase.length * (typeDelay + eraseDelay);
 const restartPause = 500;
 let typewriterTimer;
+let hasMounted = false;
+let reducedMotion = false;
 
-onMounted(() => {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    typedCharacterCount.value = welcomePhrase.length;
+function startTypewriter() {
+  window.clearTimeout(typewriterTimer);
+  const phrase = welcomePhrase.value;
+  typedCharacterCount.value = 0;
+  if (!hasMounted) return;
+  if (reducedMotion) {
+    typedCharacterCount.value = phrase.length;
     return;
   }
 
+  const typeDelay = 3000 / phrase.length;
+  const eraseDelay = 1500 / phrase.length;
+  const completePause = 500;
   let characterIndex = 0;
   let deleting = false;
 
@@ -39,7 +58,7 @@ onMounted(() => {
       return;
     }
 
-    if (characterIndex < welcomePhrase.length) {
+    if (characterIndex < phrase.length) {
       characterIndex += 1;
       typewriterTimer = window.setTimeout(tick, typeDelay);
     } else {
@@ -49,6 +68,14 @@ onMounted(() => {
   };
 
   tick();
+}
+
+watch(welcomePhrase, startTypewriter);
+
+onMounted(() => {
+  hasMounted = true;
+  reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  startTypewriter();
 });
 
 onBeforeUnmount(() => window.clearTimeout(typewriterTimer));
@@ -93,7 +120,7 @@ const destinations = computed(() => {
     <section class="welcome" aria-labelledby="welcome-title">
       <div class="welcome-copy">
         <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> YOUR BINDERBASE HOME</p>
-        <h1 id="welcome-title" aria-label="Welcome to BinderBase.">
+        <h1 id="welcome-title" :aria-label="welcomePhrase">
           <span class="welcome-title-visible" aria-hidden="true">
             <span class="welcome-title-line">
               <span
@@ -107,6 +134,13 @@ const destinations = computed(() => {
                 v-for="(character, index) in welcomeSecondLine"
                 :key="`second-${index}`"
                 :class="{ 'welcome-character-hidden': typedCharacterCount <= index + 11 }"
+              >{{ character }}</span>
+            </span>
+            <span class="welcome-title-line welcome-title-username" :style="{ fontSize: usernameFontSize }">
+              <span
+                v-for="(character, index) in welcomeUsernameLine"
+                :key="`username-${index}`"
+                :class="{ 'welcome-character-hidden': typedCharacterCount <= index + 22 }"
               >{{ character }}</span>
             </span>
           </span>
@@ -171,7 +205,7 @@ const destinations = computed(() => {
 .welcome {
   position: relative;
   display: flex;
-  min-height: 330px;
+  height: 520px;
   align-items: center;
   justify-content: space-between;
   overflow: hidden;
@@ -186,11 +220,12 @@ const destinations = computed(() => {
 .eyebrow { margin: 0; color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .15em; }
 .welcome .eyebrow { display: flex; align-items: center; gap: 9px; }
 .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
-h1 { min-height: 1.98em; margin: 22px 0 13px; font-size: clamp(48px, 7.4vw, 78px); line-height: .99; letter-spacing: -.065em; font-weight: 650; }
+h1 { height: 2.97em; margin: 22px 0 13px; font-size: clamp(48px, 7.4vw, 78px); line-height: .99; letter-spacing: -.065em; font-weight: 650; }
 .welcome-title-visible { display: block; }
 .welcome-title-line { display: block; min-height: .99em; }
 .welcome-character-hidden { visibility: hidden; }
 .welcome-title-accent { color: var(--accent); font-style: normal; font-weight: 700; }
+.welcome-title-username { color: var(--text); font-style: normal; font-weight: 650; overflow-wrap: anywhere; }
 .intro { max-width: 430px; margin: 0; color: var(--muted); font-size: 15px; line-height: 1.7; }
 .welcome-actions { display: flex; flex-wrap: wrap; gap: 11px; margin-top: 27px; }
 .button { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 18px; padding: 0 18px; border: 1px solid transparent; border-radius: 7px; color: inherit; font-size: 13px; font-weight: 650; text-decoration: none; }
@@ -199,7 +234,12 @@ h1 { min-height: 1.98em; margin: 22px 0 13px; font-size: clamp(48px, 7.4vw, 78px
 .button-secondary { border-color: var(--border); background: var(--surface); }
 .button-secondary:hover { border-color: var(--accent); }
 
-.welcome-mark { display: block; flex: 0 0 auto; margin: 0 5% 0 24px; }
+.welcome-mark { display: block; flex: 0 0 auto; margin: 0 5% 0 24px; animation: welcome-mark-float 6s ease-in-out infinite; }
+
+@keyframes welcome-mark-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-30px); }
+}
 
 .destinations { padding: 47px 2px 0; }
 .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 19px; }
@@ -216,7 +256,7 @@ h2 { margin: 8px 0 0; font-size: 24px; letter-spacing: -.035em; font-weight: 700
 
 @media (max-width: 700px) {
   .home-shell { padding-right: 18px; padding-left: 18px; }
-  .welcome { min-height: auto; padding: 34px 27px; }
+  .welcome { height: 440px; padding: 34px 27px; }
   .welcome-mark { margin-right: -25px; margin-left: 0; }
   .destination-grid { grid-template-columns: 1fr; }
   .destination-card { min-height: 118px; }
@@ -227,5 +267,9 @@ h2 { margin: 8px 0 0; font-size: 24px; letter-spacing: -.035em; font-weight: 700
   .welcome-mark { position: absolute; top: -18px; right: -48px; }
   .welcome-copy { max-width: 100%; }
   .section-heading { align-items: flex-start; flex-direction: column; gap: 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome-mark { animation: none; }
 }
 </style>
